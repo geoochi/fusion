@@ -141,6 +141,8 @@ func (h *Handler) SetupRouter() *gin.Engine {
 			auth.POST("/bookmarks", h.createBookmark)
 			auth.GET("/bookmarks/:id", h.getBookmark)
 			auth.DELETE("/bookmarks/:id", h.deleteBookmark)
+
+			auth.GET("/opml/export", h.exportOPML)
 		}
 	}
 

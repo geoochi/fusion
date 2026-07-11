@@ -32,9 +32,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { feedAPI, groupAPI } from "@/lib/api";
+import { opmlAPI } from "@/lib/api";
 import type { Feed, Group } from "@/lib/api";
-import { generateOPML, downloadFile } from "@/lib/opml";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import {
@@ -143,12 +142,7 @@ function FeedsPage() {
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      const [groupsRes, feedsRes] = await Promise.all([
-        groupAPI.list(),
-        feedAPI.list(),
-      ]);
-      const opml = generateOPML(groupsRes.data, feedsRes.data);
-      downloadFile(opml, "fusion-subscriptions.opml", "application/xml");
+      await opmlAPI.export();
       toast.success(t("feeds.toast.exported"));
     } catch {
       toast.error(t("feeds.toast.exportFailed"));

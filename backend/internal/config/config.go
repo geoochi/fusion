@@ -11,6 +11,7 @@ import (
 type Config struct {
 	DBPath        string
 	Password      string // Plaintext password from env
+	Host          string
 	Port          int
 	FeverUsername string // Username used to derive Fever API key.
 
@@ -63,6 +64,11 @@ func Load() (*Config, error) {
 
 	if strings.TrimSpace(password) == "" && !allowEmptyPassword {
 		return nil, fmt.Errorf("FUSION_PASSWORD is required (or set FUSION_ALLOW_EMPTY_PASSWORD=true)")
+	}
+
+	host := os.Getenv("FUSION_HOST")
+	if host == "" {
+		host = "127.0.0.1"
 	}
 
 	port := os.Getenv("FUSION_PORT")
@@ -131,6 +137,7 @@ func Load() (*Config, error) {
 	return &Config{
 		DBPath:             dbPath,
 		Password:           password,
+		Host:               host,
 		Port:               parsedPort,
 		FeverUsername:      getEnvString("FUSION_FEVER_USERNAME", "fusion"),
 		CORSAllowedOrigins: corsAllowedOrigins,

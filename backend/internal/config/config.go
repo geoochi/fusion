@@ -67,9 +67,9 @@ func Load() (*Config, error) {
 	}
 
 	host := os.Getenv("FUSION_HOST")
-	if host == "" {
-		host = "127.0.0.1"
-	}
+	// if host == "" {
+	// 	host = "127.0.0.1"
+	// }
 
 	port := os.Getenv("FUSION_PORT")
 	if port == "" {

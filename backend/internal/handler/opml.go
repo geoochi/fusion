@@ -11,10 +11,10 @@ import (
 
 // OPML document structures. encoding/xml handles attribute escaping safely.
 type opmlDocument struct {
-	XMLName xml.Name     `xml:"opml"`
-	Version string       `xml:"version,attr"`
-	Head    opmlHead     `xml:"head"`
-	Body    opmlBody     `xml:"body"`
+	XMLName xml.Name `xml:"opml"`
+	Version string   `xml:"version,attr"`
+	Head    opmlHead `xml:"head"`
+	Body    opmlBody `xml:"body"`
 }
 
 type opmlHead struct {
@@ -60,7 +60,7 @@ func (h *Handler) exportOPML(c *gin.Context) {
 // buildOPML constructs the OPML XML bytes from groups and feeds. Feeds are
 // nested under their owning group; feeds whose group no longer exists are
 // emitted at the top level of the body.
-func buildOPML(groups []model.Group, feeds []model.Feed, now time.Time) []byte {
+func buildOPML(groups []*model.Group, feeds []*model.Feed, now time.Time) []byte {
 	groupByID := make(map[int64]int, len(groups))
 	for i, g := range groups {
 		groupByID[g.ID] = i

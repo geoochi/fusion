@@ -14,6 +14,7 @@ import (
 
 	"github.com/0x2E/fusion/internal/config"
 	"github.com/0x2E/fusion/internal/handler"
+	"github.com/0x2E/fusion/internal/notify"
 	"github.com/0x2E/fusion/internal/pull"
 	"github.com/0x2E/fusion/internal/store"
 	"github.com/gin-gonic/gin"
@@ -63,6 +64,8 @@ func run() error {
 	defer stop()
 
 	g, ctx := errgroup.WithContext(sigCtx)
+
+	g.Go(func() error { return notify.New(st, cfg.FeishuWebhook).Run(ctx) })
 
 	g.Go(func() error {
 		slog.Info("starting server", "address", addr)

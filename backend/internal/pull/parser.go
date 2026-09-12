@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"html"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -191,6 +192,30 @@ func mapItem(item *gofeed.Item, baseURL *url.URL) *ParsedItem {
 	content := item.Content
 	if content == "" {
 		content = item.Description
+	}
+
+	// Some feeds expose media only as enclosures rather than inline HTML.
+	for _, enclosure := range item.Enclosures {
+		mediaURL, err := url.Parse(enclosure.URL)
+		if err != nil {
+			continue
+		}
+		if baseURL != nil {
+			mediaURL = baseURL.ResolveReference(mediaURL)
+		}
+		if mediaURL.Host == "" || (mediaURL.Scheme != "http" && mediaURL.Scheme != "https") {
+			continue
+		}
+		src := html.EscapeString(mediaURL.String())
+		if strings.Contains(content, src) {
+			continue
+		}
+		switch {
+		case strings.HasPrefix(enclosure.Type, "image/"):
+			content += `<p><img src="` + src + `" alt=""></p>`
+		case strings.HasPrefix(enclosure.Type, "video/"):
+			content += `<p><video controls src="` + src + `"></video></p>`
+		}
 	}
 
 	var sourcePubDate int64

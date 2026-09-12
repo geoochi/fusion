@@ -9,6 +9,7 @@ import (
 )
 
 type Config struct {
+	FeishuWebhook string // Optional custom bot webhook; treat as a secret.
 	DBPath        string
 	Password      string // Plaintext password from env
 	Port          int
@@ -131,6 +132,7 @@ func Load() (*Config, error) {
 
 	return &Config{
 		DBPath:             dbPath,
+		FeishuWebhook:      getEnvString("FUSION_FEISHU_WEBHOOK", ""),
 		Password:           password,
 		Port:               parsedPort,
 		Host:               getEnvString("FUSION_HOST", ""),

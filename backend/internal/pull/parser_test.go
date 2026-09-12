@@ -165,3 +165,15 @@ func TestFallbackGUIDUsesSourcePubDateWhenProvided(t *testing.T) {
 		t.Fatalf("expected different GUID when source pub date differs, got %q", g1)
 	}
 }
+
+func TestMapItemPreservesMediaEnclosures(t *testing.T) {
+	base, _ := url.Parse("https://example.com/rss")
+	item := mapItem(&gofeed.Item{Description: "Post", Enclosures: []*gofeed.Enclosure{
+		{URL: "/image.png", Type: "image/png"},
+		{URL: "https://example.com/movie.mp4", Type: "video/mp4"},
+		{URL: "javascript:alert(1)", Type: "image/png"},
+	}}, base)
+	if !strings.Contains(item.Content, `src="https://example.com/image.png"`) || !strings.Contains(item.Content, `<video controls`) || strings.Contains(item.Content, "javascript:") {
+		t.Fatal(item.Content)
+	}
+}

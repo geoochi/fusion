@@ -12,6 +12,7 @@ type Config struct {
 	DBPath        string
 	Password      string // Plaintext password from env
 	Port          int
+	Host          string // Empty listens on all interfaces.
 	FeverUsername string // Username used to derive Fever API key.
 
 	CORSAllowedOrigins []string // Allowed Origins for CORS. Empty means allow all.
@@ -132,6 +133,7 @@ func Load() (*Config, error) {
 		DBPath:             dbPath,
 		Password:           password,
 		Port:               parsedPort,
+		Host:               getEnvString("FUSION_HOST", ""),
 		FeverUsername:      getEnvString("FUSION_FEVER_USERNAME", "fusion"),
 		CORSAllowedOrigins: corsAllowedOrigins,
 		TrustedProxies:     trustedProxies,

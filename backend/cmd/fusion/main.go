@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -48,7 +49,7 @@ func run() error {
 	}
 	r := h.SetupRouter()
 
-	addr := ":" + strconv.Itoa(cfg.Port)
+	addr := net.JoinHostPort(cfg.Host, strconv.Itoa(cfg.Port))
 	srv := &http.Server{
 		Addr:              addr,
 		Handler:           r,

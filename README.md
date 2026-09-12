@@ -146,14 +146,14 @@ Contributions are welcome. Please read [Contributing Guidelines](./CONTRIBUTING.
 
 Set `FUSION_FEISHU_WEBHOOK` to a custom bot webhook to notify on newly received,
 unread articles. Messages contain the source, title (or a content-derived title),
-a text excerpt, original link, and up to six image/video links. Media files are
+the original link first, a short excerpt (up to 200 characters), and up to six image/video links. Media files are
 not uploaded; RSS image/video enclosures are preserved in article content.
 Oversized messages are shortened to fit the webhook payload limit.
 
 Delivery state is persisted in SQLite. Historical items are skipped when the
 notification migration is first applied. The sender checks every 10 seconds,
 sends at most one message per second, and retries failures after 1 minute with
-exponential backoff up to 1 hour. It does not mark articles read. Read articles
+exponential backoff up to 1 hour. Successful delivery atomically marks the article read. Failed delivery keeps it unread. Read articles
 are excluded at send time. Normal restarts do not repeat successful deliveries;
 a crash or ambiguous network failure after Feishu accepts a message can cause
 a retry because custom webhooks offer no transactional delivery acknowledgement.

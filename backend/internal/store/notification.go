@@ -40,8 +40,25 @@ func (s *Store) NotificationStillUnread(id int64) (bool, error) {
 }
 
 func (s *Store) CompleteNotification(id, now int64) error {
-	_, err := s.db.Exec(`UPDATE feishu_notifications SET status='sent', sent_at=:now WHERE item_id=:id`, sql.Named("now", now), sql.Named("id", id))
-	return err
+	tx, err := s.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	result, err := tx.Exec(`UPDATE feishu_notifications SET status='sent', sent_at=:now WHERE item_id=:id AND status='pending'`, sql.Named("now", now), sql.Named("id", id))
+	if err != nil {
+		return err
+	}
+	changed, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if changed > 0 {
+		if _, err = tx.Exec(`UPDATE items SET unread=0 WHERE id=:id`, sql.Named("id", id)); err != nil {
+			return err
+		}
+	}
+	return tx.Commit()
 }
 
 func (s *Store) RetryNotification(id, next int64) error {

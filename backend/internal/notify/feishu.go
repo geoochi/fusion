@@ -141,16 +141,16 @@ func (w *Worker) send(ctx context.Context, n store.Notification) error {
 
 func message(n store.Notification) string {
 	text, media := extract(n.Content, n.Link)
-	title := strings.TrimSpace(n.Title)
-	if title == "" {
-		title = truncate(text, 100)
-	}
-	if title == "" {
-		title = "新文章"
-	}
-	result := "Fusion · " + truncate(n.FeedName, 100) + "\n" + truncate(title, 200) + "\n\n" + truncate(text, 3000)
+	result := ""
 	if link := safeURL(n.Link, ""); link != "" {
-		result += "\n\n原文：" + link
+		result = "原文：" + link + "\n"
+	}
+	result += "Fusion · " + truncate(n.FeedName, 80)
+	if title := strings.TrimSpace(n.Title); title != "" {
+		result += "\n" + truncate(title, 80)
+	}
+	if text != "" {
+		result += "\n" + truncate(text, 200)
 	}
 	for _, m := range media {
 		result += "\n" + m

@@ -52,3 +52,18 @@ func TestSendChecksFeishuAcknowledgement(t *testing.T) {
 		})
 	}
 }
+
+func TestMessageLinkFirstAndShortSummary(t *testing.T) {
+	msg := message(store.Notification{FeedName: "Tao", Link: "https://example.com/post", Content: strings.Repeat("文", 250)})
+	lines := strings.Split(msg, "\n")
+	if lines[0] != "原文：https://example.com/post" || len(lines) != 3 {
+		t.Fatal(msg)
+	}
+	if len([]rune(lines[2])) != 201 || !strings.HasSuffix(lines[2], "…") {
+		t.Fatal(msg)
+	}
+	short := message(store.Notification{Content: "short text"})
+	if strings.Contains(short, "…") {
+		t.Fatal(short)
+	}
+}

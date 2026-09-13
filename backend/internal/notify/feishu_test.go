@@ -67,3 +67,20 @@ func TestMessageLinkFirstAndShortSummary(t *testing.T) {
 		t.Fatal(short)
 	}
 }
+
+func TestMessageOmitsTitlesDerivedFromBody(t *testing.T) {
+	for _, title := range []string{"第一句。第二句...", "第一句。第二句…", "第一句。第二句继续。", "第一句。 第二句..."} {
+		msg := message(store.Notification{Title: title, Content: "<p>第一句。第二句继续。</p>", Link: "https://example.com/post"})
+		if strings.Count(msg, "第一句") != 1 {
+			t.Fatalf("duplicated title %q: %s", title, msg)
+		}
+	}
+	msg := message(store.Notification{Title: "独立标题", Content: "<p>第一句。第二句继续。</p>"})
+	if !strings.Contains(msg, "独立标题") {
+		t.Fatal(msg)
+	}
+	msg = message(store.Notification{Title: "只有标题"})
+	if !strings.Contains(msg, "只有标题") {
+		t.Fatal(msg)
+	}
+}

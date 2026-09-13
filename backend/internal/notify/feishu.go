@@ -146,7 +146,7 @@ func message(n store.Notification) string {
 		result = "原文：" + link + "\n"
 	}
 	result += "Fusion · " + truncate(n.FeedName, 80)
-	if title := strings.TrimSpace(n.Title); title != "" {
+	if title := strings.TrimSpace(n.Title); title != "" && !titleRepeatsBody(title, text) {
 		result += "\n" + truncate(title, 80)
 	}
 	if text != "" {
@@ -156,6 +156,19 @@ func message(n store.Notification) string {
 		result += "\n" + m
 	}
 	return result
+}
+
+// Social feeds often synthesize a title from the beginning of the post.
+func titleRepeatsBody(title, body string) bool {
+	titleText, _ := extract(title, "")
+	titleText = strings.TrimSpace(titleText)
+	for _, suffix := range []string{"...", "…"} {
+		titleText = strings.TrimSpace(strings.TrimSuffix(titleText, suffix))
+	}
+	// Ignore layout whitespace while comparing HTML-derived text.
+	titleText = strings.Join(strings.Fields(titleText), "")
+	body = strings.Join(strings.Fields(body), "")
+	return titleText != "" && strings.HasPrefix(body, titleText)
 }
 
 func truncate(s string, max int) string {

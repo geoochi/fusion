@@ -148,6 +148,7 @@ Set `FUSION_FEISHU_WEBHOOK` to a custom bot webhook to notify on newly received,
 unread articles. Messages contain the source, title (or a content-derived title),
 the original link first, a short excerpt (up to 200 characters), and up to six image/video links. Media files are
 not uploaded; RSS image/video enclosures are preserved in article content.
+Titles that repeat the beginning of the body are omitted to avoid duplicate text.
 Oversized messages are shortened to fit the webhook payload limit.
 
 Delivery state is persisted in SQLite. Historical items are skipped when the
